@@ -1,0 +1,50 @@
+[project]
+name = "narde"
+version = "0.1.0"
+description = "Non-autoregressive, multilingual, System-1 decision engine (Laya-compatible)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "narde" }]
+
+# Core is deliberately dependency-light so that `import narde` and the
+# packaging smoke test run on a bare interpreter. The heavy ML stack lives
+# behind the [engine] extra (see src/narde/__init__.py lazy-import note).
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+engine = [
+    "torch>=2.0",
+    "transformers>=4.48.0",
+    "safetensors>=0.4.0",
+    "huggingface-hub>=0.20.0",
+    "numpy>=1.24",
+]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/example/narde"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["narde*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]

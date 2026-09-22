@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Reference (read-only oracle; never committed)
+reference/
+
+# Data & model artifacts
+data/
+*.pt
+*.pt2
+*.bin
+*.safetensors
+*.pth
+checkpoints/
+calib/
+
+# Env
+.env
+.env.*
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
