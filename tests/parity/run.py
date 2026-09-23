@@ -16,6 +16,7 @@ if HERE not in sys.path:
 MODULES = [
     "test_prompts",
     "test_model",
+    "test_lang",
     "test_router",
     "test_calib",
     "test_presets_email",

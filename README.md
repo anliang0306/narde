@@ -15,7 +15,7 @@ its weights.
 
 The full engine (prompts, model, router, lang, calibration, shortlist, presets,
 email, agent) is implemented as a **1:1 port of laya v0.3.5** and is pinned by a
-**differential parity suite** in `tests/parity/` (36 checks, green). Each test runs
+**differential parity suite** in `tests/parity/` (40 checks, green). Each test runs
 the *same* input through both `reference/laya` and `narde` and asserts identical
 outputs (exact token lists, `allclose` tensors, equal dicts) — that is the
 executable definition of "100% replication" of the code/behavior layer. Model
@@ -45,7 +45,7 @@ python tests/parity/run.py            # or: pytest -q tests/parity
 src/narde/            engine (prompts, model, router, lang, calib,
                       shortlist, presets, email, agent, settings)
 tests/test_smoke.py   bare-venv packaging green-bar (pydantic only, no torch)
-tests/parity/         laya<->narde differential suite (36 checks) + run.py
+tests/parity/         laya<->narde differential suite (40 checks) + run.py
 bench/                latency.py + quality.py + canary.jsonl + results/
 docs/                 architecture-notes · api-contract · divergence · bench-log
 reference/laya/       read-only upstream oracle (gitignored, not committed)

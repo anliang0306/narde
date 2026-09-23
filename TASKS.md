@@ -10,7 +10,7 @@
 | M3 | `router.py` + `lang.py` | ✅ | 路由/别名/LRU/多语言全一致 |
 | M4 | `calib.py` 温度 + ECE | ✅ | clamp/ECE/confidence 与 laya 一致 |
 | M5 | `shortlist.py` + `presets.py` + `email.py` | ✅ | 高基数/预设/邮件与上游一致 |
-| M5.5 | 差分测试套件 `tests/parity/` | ✅ | 36 项全绿，CI 可重复 |
+| M5.5 | 差分测试套件 `tests/parity/` | ✅ | 40 项全绿，CI 可重复 |
 | M6（可选） | RLCD 域微调（需 HF 权重 + GPU） | ⬜ | typed-decisions 域 ≥ 0.70 acc |
 | M7 | bench 骨架 + 文档收尾 | ✅ | latency/quality 双 harness（`--tiny` 离线可跑）+ bench-log |
 
@@ -39,7 +39,7 @@
   `embed_fn_from_agent`；5 个预设问题包；`clean_email_body` / `email_state` /
   `email_questions`。
 
-## M5.5 — 差分测试套件（✅ 36/36 全绿）
+## M5.5 — 差分测试套件（✅ 40/40 全绿）
 
 "100% 复刻"的可执行定义：同输入下 laya 与 narde 输出必须相等
 （token 列表精确相等、张量 allclose、dict 相等；权重不重新生成）。
@@ -51,8 +51,9 @@ tests/parity/
   conftest.py           # pytest 路径引导
   run.py                # 独立 runner（无需 pytest，离线/沙箱可用）
   test_prompts.py       # 5
-  test_model.py         # 6（含 shared-weights 前向一致性）
-  test_router.py        # 8（含 LRU 生命周期 + 错误消息一致性）
+  test_model.py         # 7（含 shared-weights 前向一致性）
+  test_lang.py          # 4（多语言语料 + 同型异常镜像）
+  test_router.py        # 7（含 LRU 生命周期 + 错误消息一致性）
   test_calib.py         # 5
   test_presets_email.py # 4（含 10×3 邮件清洗矩阵）
   test_shortlist.py     # 4

@@ -55,7 +55,7 @@ guarded by a test.
 ## Verifying
 
 ```bash
-# Full differential suite (36 checks), offline, CPU:
+# Full differential suite (40 checks), offline, CPU:
 python tests/parity/run.py
 
 # With pytest installed:
