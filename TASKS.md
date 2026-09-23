@@ -74,6 +74,7 @@ DecisionModel，既验证前向一致，又验证架构 key/shape 兼容。
 - [x] `bench/latency.py` — 检测开销、单/批量 system_one、Router 热/冷路径、混合语言负载
 - [x] `bench/quality.py` + `bench/canary.jsonl` — 内置 18 例 canary 集，acc / macro-F1 / ECE / brier / nll
 - [x] `docs/bench-log.md` 记录首次 tiny 基线；README 补 Benchmarks 章节
+- [x] `PAPER.md` — 研究论文（差分复刻方法学 + narde/laya 案例，arXiv 风格，中文）
 - [ ] 真实 checkpoint 跑分（需 `--model convaiinnovations/laya`，联网 + 下载权重）
 
 ## 提交规范

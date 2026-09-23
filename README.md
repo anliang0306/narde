@@ -48,6 +48,8 @@ tests/test_smoke.py   bare-venv packaging green-bar (pydantic only, no torch)
 tests/parity/         laya<->narde differential suite (40 checks) + run.py
 bench/                latency.py + quality.py + canary.jsonl + results/
 docs/                 architecture-notes · api-contract · divergence · bench-log
+PAPER.md              research paper: differential parity testing as the
+                      executable definition of "100% replication" (narde/laya)
 reference/laya/       read-only upstream oracle (gitignored, not committed)
 ```
 
