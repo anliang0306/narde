@@ -12,7 +12,7 @@
 | M5 | `shortlist.py` + `presets.py` + `email.py` | ✅ | 高基数/预设/邮件与上游一致 |
 | M5.5 | 差分测试套件 `tests/parity/` | ✅ | 36 项全绿，CI 可重复 |
 | M6（可选） | RLCD 域微调（需 HF 权重 + GPU） | ⬜ | typed-decisions 域 ≥ 0.70 acc |
-| M7 | 文档收尾 + bench-log | 🟡 | README/bench-log 待补 |
+| M7 | bench 骨架 + 文档收尾 | ✅ | latency/quality 双 harness（`--tiny` 离线可跑）+ bench-log |
 
 ## M0 — 脚手架（✅）
 
@@ -67,10 +67,13 @@ DecisionModel，既验证前向一致，又验证架构 key/shape 兼容。
 - 需 HF 权重下载（`convaiinnovations/laya`）+ GPU
 - RLCD 训练循环 + 温度重拟合；typed-decisions test 400 cases ≥ 0.70 acc
 
-## M7 — 文档收尾 🟡
+## M7 — Bench 骨架 + 文档收尾（✅ 离线部分完成）
 
-- [ ] `docs/bench-log.md` 记录（首次基线待补）
-- [ ] README 补 Benchmarks 章节
+- [x] `bench/common.py` — 共享工具（env_meta / timed / 报告写出 / tiny 离线 Agent / 双语样例 state）
+- [x] `bench/latency.py` — 检测开销、单/批量 system_one、Router 热/冷路径、混合语言负载
+- [x] `bench/quality.py` + `bench/canary.jsonl` — 内置 18 例 canary 集，acc / macro-F1 / ECE / brier / nll
+- [x] `docs/bench-log.md` 记录首次 tiny 基线；README 补 Benchmarks 章节
+- [ ] 真实 checkpoint 跑分（需 `--model convaiinnovations/laya`，联网 + 下载权重）
 
 ## 提交规范
 

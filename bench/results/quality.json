@@ -1,0 +1,401 @@
+{
+  "meta": {
+    "timestamp": "2026-09-23 10:25:01",
+    "python": "3.14.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "torch": "2.12.0+cpu",
+    "torch_threads": 14,
+    "narde": "0.1.0",
+    "git_sha": "b693127",
+    "mode": "tiny",
+    "model": "tiny-bert"
+  },
+  "dataset": "canary (built-in)",
+  "overall": {
+    "n": 24,
+    "accuracy": 0.2917,
+    "macro_f1": 0.221,
+    "ece": 0.1015,
+    "brier": 0.6377,
+    "nll": 1.0727,
+    "mean_confidence": 0.3779,
+    "acc_at_50_coverage": 0.5
+  },
+  "by_question_type": {
+    "choice": {
+      "n": 7,
+      "accuracy": 0.1429,
+      "macro_f1": 0.0625,
+      "ece": 0.1208,
+      "brier": 0.7535,
+      "nll": 1.3933,
+      "mean_confidence": 0.2636,
+      "acc_at_50_coverage": 0.3333
+    },
+    "noul": {
+      "n": 11,
+      "accuracy": 0.4545,
+      "macro_f1": 0.4107,
+      "ece": 0.0571,
+      "brier": 0.5013,
+      "nll": 0.6944,
+      "mean_confidence": 0.5116,
+      "acc_at_50_coverage": 0.4
+    },
+    "score": {
+      "n": 6,
+      "accuracy": 0.1667,
+      "macro_f1": 0.1,
+      "ece": 0.1605,
+      "brier": 0.7527,
+      "nll": 1.3921,
+      "mean_confidence": 0.2661,
+      "acc_at_50_coverage": 0.3333
+    }
+  },
+  "by_workflow": {
+    "email": {
+      "n": 6,
+      "accuracy": 0.3333,
+      "macro_f1": 0.125,
+      "ece": 0.0203,
+      "brier": 0.6669,
+      "nll": 1.1553,
+      "mean_confidence": 0.3536,
+      "acc_at_50_coverage": 0.6667
+    },
+    "moderation": {
+      "n": 3,
+      "accuracy": 0.3333,
+      "macro_f1": 0.1667,
+      "ece": 0.061,
+      "brier": 0.7485,
+      "nll": 1.3838,
+      "mean_confidence": 0.2723,
+      "acc_at_50_coverage": 1.0
+    },
+    "router": {
+      "n": 6,
+      "accuracy": 0.3333,
+      "macro_f1": 0.1667,
+      "ece": 0.2095,
+      "brier": 0.6256,
+      "nll": 1.0438,
+      "mean_confidence": 0.3837,
+      "acc_at_50_coverage": 0.6667
+    },
+    "support": {
+      "n": 6,
+      "accuracy": 0.3333,
+      "macro_f1": 0.3333,
+      "ece": 0.1735,
+      "brier": 0.5048,
+      "nll": 0.6979,
+      "mean_confidence": 0.5068,
+      "acc_at_50_coverage": 0.3333
+    },
+    "triage": {
+      "n": 3,
+      "accuracy": 0.0,
+      "macro_f1": 0.0,
+      "ece": 0.2627,
+      "brier": 0.7587,
+      "nll": 1.4035,
+      "mean_confidence": 0.2627,
+      "acc_at_50_coverage": 0.0
+    }
+  },
+  "per_question": [
+    {
+      "case": "c01",
+      "qid": "category",
+      "type": "choice",
+      "gold": 0,
+      "predicted": 0,
+      "probs": [
+        0.2651,
+        0.2402,
+        0.2583,
+        0.2363
+      ]
+    },
+    {
+      "case": "c02",
+      "qid": "category",
+      "type": "choice",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.2631,
+        0.2401,
+        0.2598,
+        0.237
+      ]
+    },
+    {
+      "case": "c03",
+      "qid": "category",
+      "type": "choice",
+      "gold": 2,
+      "predicted": 0,
+      "probs": [
+        0.2646,
+        0.2386,
+        0.2595,
+        0.2372
+      ]
+    },
+    {
+      "case": "c04",
+      "qid": "category",
+      "type": "choice",
+      "gold": 3,
+      "predicted": 0,
+      "probs": [
+        0.2646,
+        0.2391,
+        0.2591,
+        0.2371
+      ]
+    },
+    {
+      "case": "c05",
+      "qid": "urgent",
+      "type": "noul",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.5109,
+        0.4891
+      ]
+    },
+    {
+      "case": "c05",
+      "qid": "refund",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 1,
+      "probs": [
+        0.4966,
+        0.5034
+      ]
+    },
+    {
+      "case": "c06",
+      "qid": "urgent",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 0,
+      "probs": [
+        0.5103,
+        0.4897
+      ]
+    },
+    {
+      "case": "c06",
+      "qid": "refund",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 1,
+      "probs": [
+        0.4974,
+        0.5026
+      ]
+    },
+    {
+      "case": "c07",
+      "qid": "urgent",
+      "type": "noul",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.5105,
+        0.4895
+      ]
+    },
+    {
+      "case": "c07",
+      "qid": "refund",
+      "type": "noul",
+      "gold": 1,
+      "predicted": 1,
+      "probs": [
+        0.4969,
+        0.5031
+      ]
+    },
+    {
+      "case": "c08",
+      "qid": "severity",
+      "type": "score",
+      "gold": 2,
+      "predicted": 3,
+      "probs": [
+        0.232,
+        0.2467,
+        0.249,
+        0.2723
+      ]
+    },
+    {
+      "case": "c09",
+      "qid": "severity",
+      "type": "score",
+      "gold": 0,
+      "predicted": 3,
+      "probs": [
+        0.2321,
+        0.2463,
+        0.2493,
+        0.2723
+      ]
+    },
+    {
+      "case": "c10",
+      "qid": "severity",
+      "type": "score",
+      "gold": 3,
+      "predicted": 3,
+      "probs": [
+        0.2323,
+        0.2464,
+        0.2489,
+        0.2724
+      ]
+    },
+    {
+      "case": "c11",
+      "qid": "phishing",
+      "type": "noul",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.5319,
+        0.4681
+      ]
+    },
+    {
+      "case": "c12",
+      "qid": "phishing",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 0,
+      "probs": [
+        0.5325,
+        0.4675
+      ]
+    },
+    {
+      "case": "c13",
+      "qid": "difficulty",
+      "type": "score",
+      "gold": 1,
+      "predicted": 2,
+      "probs": [
+        0.2598,
+        0.2451,
+        0.26,
+        0.2351
+      ]
+    },
+    {
+      "case": "c13",
+      "qid": "needs_tools",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 0,
+      "probs": [
+        0.5083,
+        0.4917
+      ]
+    },
+    {
+      "case": "c14",
+      "qid": "difficulty",
+      "type": "score",
+      "gold": 0,
+      "predicted": 2,
+      "probs": [
+        0.2591,
+        0.246,
+        0.2596,
+        0.2352
+      ]
+    },
+    {
+      "case": "c14",
+      "qid": "needs_tools",
+      "type": "noul",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.5069,
+        0.4931
+      ]
+    },
+    {
+      "case": "c15",
+      "qid": "difficulty",
+      "type": "score",
+      "gold": 3,
+      "predicted": 2,
+      "probs": [
+        0.2585,
+        0.2454,
+        0.2601,
+        0.2359
+      ]
+    },
+    {
+      "case": "c15",
+      "qid": "needs_tools",
+      "type": "noul",
+      "gold": 0,
+      "predicted": 0,
+      "probs": [
+        0.5075,
+        0.4925
+      ]
+    },
+    {
+      "case": "c16",
+      "qid": "intent",
+      "type": "choice",
+      "gold": 2,
+      "predicted": 0,
+      "probs": [
+        0.2627,
+        0.2429,
+        0.2503,
+        0.2441
+      ]
+    },
+    {
+      "case": "c17",
+      "qid": "intent",
+      "type": "choice",
+      "gold": 1,
+      "predicted": 0,
+      "probs": [
+        0.2626,
+        0.2428,
+        0.2501,
+        0.2445
+      ]
+    },
+    {
+      "case": "c18",
+      "qid": "intent",
+      "type": "choice",
+      "gold": 3,
+      "predicted": 0,
+      "probs": [
+        0.2627,
+        0.2428,
+        0.2503,
+        0.2442
+      ]
+    }
+  ]
+}

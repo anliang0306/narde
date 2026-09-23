@@ -20,8 +20,9 @@ the *same* input through both `reference/laya` and `narde` and asserts identical
 outputs (exact token lists, `allclose` tensors, equal dicts) — that is the
 executable definition of "100% replication" of the code/behavior layer. Model
 weights are laya's Apache-2.0 checkpoints (loaded, not re-created). See
-`docs/divergence.md` for the few intentional deltas. Domain fine-tune (M6) and
-bench harness (M7) remain open. Details in `TASKS.md` / `AGENTS.md`.
+`docs/divergence.md` for the few intentional deltas. A benchmark skeleton
+(`bench/`) runs offline in `--tiny` mode. Domain fine-tune (M6) still needs HF
+weights + GPU. Details in `TASKS.md` / `AGENTS.md`.
 
 ## Quickstart
 
@@ -45,10 +46,31 @@ src/narde/            engine (prompts, model, router, lang, calib,
                       shortlist, presets, email, agent, settings)
 tests/test_smoke.py   bare-venv packaging green-bar (pydantic only, no torch)
 tests/parity/         laya<->narde differential suite (36 checks) + run.py
-bench/                latency + quality harnesses (need [engine], M7)
+bench/                latency.py + quality.py + canary.jsonl + results/
 docs/                 architecture-notes · api-contract · divergence · bench-log
 reference/laya/       read-only upstream oracle (gitignored, not committed)
 ```
+
+## Benchmarks (M7 skeleton)
+
+Two offline-runnable harnesses under `bench/` (both support a `--tiny` mode that
+uses a seeded 1-layer BERT + mock tokenizer, so they run with no network):
+
+```bash
+# Latency: detection overhead, raw system_one at 1/5/10/50 questions,
+# router hot/cold path, mixed-language workload.
+python bench/latency.py --tiny                 # offline pipeline numbers
+python bench/latency.py --model english=convaiinnovations/laya \
+    --model multilingual=convaiinnovations/laya:multilingual   # real checkpoints
+
+# Quality: accuracy / ECE / calibration on a JSONL dataset.
+python bench/quality.py --tiny --canary        # offline pipeline sanity check
+python bench/quality.py --model convaiinnovations/laya --dataset mydata.jsonl
+```
+
+Results are written to `bench/results/{latency,quality}.json` and each run is
+logged in `docs/bench-log.md`. `--tiny` numbers measure the *pipeline*, not a
+real checkpoint — treat them as smoke tests, not quality claims.
 
 ## License / provenance
 
