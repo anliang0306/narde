@@ -1,7 +1,51 @@
 # 以差分测试为可执行契约：非自回归决策引擎的清洁复刻方法论
 ## —— narde / laya 案例研究
 
-*(arXiv / 技术报告风格；正文中文，术语保留英文)*
+*(arXiv / technical-report style; body in Chinese, technical terms in English)*
+
+---
+
+## Abstract (English, for submission systems)
+
+Clean-room re-implementation of an open-source machine-learning inference engine
+is usually *asserted* as faithful but rarely *provable* in a way that survives
+later refactors, dependency bumps, and second-party development. We present a
+methodology that turns "100% replication" from a faith-based claim into an
+**executable, CI-enforceable property**: differential (oracle-based) testing
+against a read-only reference. The candidate and the oracle are run in a single
+process on identical inputs, and their outputs are asserted equal at each of
+**five equivalence layers** — byte-exact token sequences, forward tensors under
+shared weights, API response dictionaries, exception semantics, and stateful
+routing lifecycle. Our case study is `narde`, a 1:1 port of `laya` v0.3.5, a
+non-autoregressive "System-1" typed-decision engine (`choice` / `score` /
+`noul`) that answers typed questions over arbitrary state in a single forward
+pass.
+
+Key techniques: (i) **shared-weight forward parity** — loading one
+`state_dict` into both packages' `DecisionModel` with `strict=True` collapses
+behavioral equivalence and architectural key/shape compatibility into a single
+assertion; (ii) a **divergence ledger** that separates intentional deltas
+(branding, version, a torch-free lazy `__init__`, log prefixes, a
+`fit_temperature` extension) from bugs, with every delta pinned by a test, so
+"100% replication" becomes the precise statement "100% *except* the ledger";
+and (iii) an **offline benchmark harness** (`--tiny` mode: a seeded 1-layer BERT
+plus a deterministic mock tokenizer driving the real `system_one` code path)
+that keeps the pipeline regression-verifiable in air-gapped, weight-free CI.
+
+Results: 40/40 differential checks pass; the suite **caught 7 real divergences
+during porting**, 5 of which were silent-drift bugs (prompt separators,
+`forward` top-2/entropy shapes, a missing language-evidence filter, a missing
+`email_questions` symbol, and a sequence-budget bug) that manual review would
+almost never surface. We are explicit about limits: differential testing proves
+**code/behavioral equivalence**, not **weight equivalence**, and not the
+reference's own correctness; functional equivalence on real data additionally
+requires real checkpoints, which our harness (but not this offline setting)
+supports. The methodology generalizes to any port with a runnable reference:
+cross-language rewrites, framework migrations, legacy modernization, and
+numerical cross-checks between LLM inference runtimes.
+
+**Keywords:** differential testing; clean-room replication; machine-learning
+inference; reproducibility; oracle-based testing; calibration
 
 ---
 
@@ -25,7 +69,7 @@ System-1 的类型化决策引擎的 1:1 端口）为案例，交付了：
   确定性 mock tokenizer，走真实 `system_one` 代码路径），使管线在无网络 / 无
   权重环境中仍可回归验证。
 
-结果：40/40 全绿；套件在移植过程中**实际捕获 7 类真实分歧**（附录 C），其中 4 类
+结果：40/40 全绿；套件在移植过程中**实际捕获 7 类真实分歧**（附录 C），其中 5 类
 属于"不崩、不报错、静默漂移"型。我们明确方法学边界：差分测试证明**代码/行为
 等价**，不证明**权重等价**，也不证明参考实现本身正确；"100% 复刻"因此被精确化
 为两层陈述（§7.1）。
@@ -360,8 +404,9 @@ pydantic 2.12.5 · CPU 单线程（`torch.set_num_threads(1)`）· 全程离线�
 随机用例上逐 id 相等。
 
 **方法学的价值在移植期**：40/40 全绿是*结果*；*过程*中该套件捕获了 7 类真实分歧
-（附录 C），其中 4 类属于"不崩、不报错、静默漂移"型——`serialize_state` 分隔符、
-`forward` top2/熵形状、`lang` 证据过滤缺失、`email_questions` 缺失——手工验收
+（附录 C），其中 5 类属于"不崩、不报错、静默漂移"型——`serialize_state` 分隔符、
+`forward` top2/熵形状、`lang` 证据过滤缺失、`email_questions` 缺失、`build_sequence`
+预算过滤缺失——手工验收
 几乎不可能发现。
 
 ### 6.2 架构兼容证明（副产品）
@@ -476,7 +521,7 @@ tiny 模式 + 双 runner。
 
 本文把"复刻对了"从一个不可证伪的信仰声明，改写成 CI 红绿灯：**只读参考
 oracle + 五层等价类差分断言 + 共享权重双跑 + 分歧台账 + 离线 tiny 回归**。
-在 narde↔laya 案例上，40/40 全绿，移植期实际捕获 7 类真实分歧（其中 4 类是
+在 narde↔laya 案例上，40/40 全绿，移植期实际捕获 7 类真实分歧（其中 5 类是
 静默漂移型）。我们强调"100% 复刻"必须分两层陈述：代码/行为等价（本文证明）
 与权重/功能等价（由 Apache-2.0 checkpoint 共享或 M6 域微调承担；真实跑分由
 同一 bench harness 的联网模式承接）。方法学一般化到任何"有可执行参考实现的
