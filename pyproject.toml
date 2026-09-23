@@ -4,8 +4,21 @@ version = "0.1.0"
 description = "Non-autoregressive, multilingual, System-1 decision engine (Laya-compatible)"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+# Apache-2.0 across the board: narde adapts code from laya (Apache-2.0), so the
+# combined work is Apache-2.0 too. See NOTICE.md for per-file attribution.
+# The TOML-table form is used (rather than the PEP 639 SPDX string) because it
+# builds on the entire currently-shipping setuptools range (61 through 84).
+license = { text = "Apache-2.0" }
 authors = [{ name = "narde" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 # Core is deliberately dependency-light so that `import narde` and the
 # packaging smoke test run on a bare interpreter. The heavy ML stack lives
@@ -29,7 +42,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/example/narde"
+Homepage = "https://github.com/anliang0306/narde"
+Repository = "https://github.com/anliang0306/narde"
+Issues = "https://github.com/anliang0306/narde/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]

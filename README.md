@@ -1,5 +1,8 @@
 # narde
 
+[![CI](https://github.com/anliang0306/narde/actions/workflows/ci.yml/badge.svg)](https://github.com/anliang0306/narde/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 Non-autoregressive, System-1 **decision engine** — a clean-room re-implementation of
 [Laya](https://github.com/NandhaKishorM/laya) (Apache-2.0). It answers typed
 questions (`choice` / `score` / `noul`) over any state (text, email, ticket, JSON)
@@ -30,10 +33,15 @@ weights + GPU. Details in `TASKS.md` / `AGENTS.md`.
 # Packaging smoke gate (bare env, pydantic only — no torch):
 python tests/test_smoke.py            # or: pytest -q tests/test_smoke.py
 
-# Full laya<->narde differential suite (offline, CPU, needs [engine] stack):
+# Full laya<->narde differential suite (offline, CPU, needs [engine] stack).
+# It compares against the read-only oracle at reference/laya/ (gitignored);
+# CI fetches it pinned to a commit SHA:
 pip install -e ".[engine]"
 python tests/parity/run.py            # or: pytest -q tests/parity
 ```
+
+Both suites are dependency-light and run **offline**: the parity suite uses a
+seeded 1-layer BERT and a deterministic mock tokenizer, so nothing is downloaded.
 
 > CPU-first: laya's checkpoints are ModernBERT/mmBERT encoders + a 2-layer decision
 > head. Expect ~200–500 ms/question on CPU (vs ~33 ms on a T4). That is expected;
@@ -48,6 +56,9 @@ tests/test_smoke.py   bare-venv packaging green-bar (pydantic only, no torch)
 tests/parity/         laya<->narde differential suite (40 checks) + run.py
 bench/                latency.py + quality.py + canary.jsonl + results/
 docs/                 architecture-notes · api-contract · divergence · bench-log
+.github/workflows/    ci.yml (parity + bare-venv smoke)
+LICENSE               Apache-2.0 (upstream-compatible)
+NOTICE.md             per-module attribution to laya v0.3.5
 PAPER.md              research paper: differential parity testing as the
                       executable definition of "100% replication" (narde/laya)
 reference/laya/       read-only upstream oracle (gitignored, not committed)
@@ -74,7 +85,31 @@ Results are written to `bench/results/{latency,quality}.json` and each run is
 logged in `docs/bench-log.md`. `--tiny` numbers measure the *pipeline*, not a
 real checkpoint — treat them as smoke tests, not quality claims.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` enforces exactly the invariant this repo is built
+around — so the "CI-checkable" claim in `PAPER.md` §4.6 is literal, not aspirational:
+
+| Job | What it proves |
+|---|---|
+| `parity` | the **40-check** laya↔narde differential suite is green via **both** runners (`tests/parity/run.py` *and* `pytest`), against the oracle pinned to commit `4170897` (laya v0.3.5) |
+| `smoke` | `import narde` still works on a **bare** venv — pydantic only, **no torch** — on Python 3.10 (the declared floor) and 3.12 |
+
+Two details worth knowing:
+
+- **The oracle is pinned by commit SHA, not by a tag.** Upstream laya publishes no
+  git tags, and a drifting oracle would make "40/40 green" meaningless. CI asserts
+  the fetched SHA equals the pin and that the tree reports `version = "0.3.5"`.
+- **The `smoke` job asserts `torch` is absent** rather than merely importing
+  `narde`. That separation is the actual invariant being protected: the engine
+  stack must stay behind the `[engine]` extra, so `import narde` never drags in torch.
+
 ## License / provenance
 
-MIT for narde's own code. Anything adapted from Laya is Apache-2.0 and is called
-out in `NOTICE.md` and per-file headers. Upstream weights are **not** vendored.
+**Apache-2.0** — see [`LICENSE`](LICENSE). narde adapts code from
+[Laya](https://github.com/NandhaKishorM/laya), which is itself Apache-2.0, so the
+combined work is Apache-2.0 as well. Per-file attribution is in the header of each
+`src/narde/*.py` and is summarised in [`NOTICE.md`](NOTICE.md).
+
+Upstream model weights are **not** vendored or retrained: inference loads the
+Apache-2.0 `convaiinnovations/laya` checkpoints on demand.

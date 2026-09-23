@@ -1,0 +1,27 @@
+# Line-ending policy.
+#
+# Everything is normalised to LF in the repository. The explicit `eol=lf` rules
+# below matter for CI correctness, not just tidiness: a CRLF inside a GitHub
+# Actions `run: |` block reaches bash as a literal \r, which breaks heredocs and
+# can corrupt the command silently. Forcing LF in the working tree too removes
+# that failure mode entirely, regardless of a contributor's core.autocrlf.
+
+* text=auto
+
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.sh     text eol=lf
+*.py     text eol=lf
+*.toml   text eol=lf
+*.md     text eol=lf
+
+# Benchmark reports and the canary dataset are generated data, not prose.
+*.json   text eol=lf
+*.jsonl  text eol=lf
+
+# Binary-ish artifacts that must never be line-ending converted.
+*.png    binary
+*.jpg    binary
+*.safetensors binary
+*.pt     binary
+*.bin    binary

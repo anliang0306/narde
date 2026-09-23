@@ -1,0 +1,122 @@
+name: CI
+
+# This workflow is the executable form of the claim made in PAPER.md §4.6:
+# any change to narde's behaviour must keep the laya<->narde differential suite
+# green (40 checks), and must not break the bare-venv packaging canary.
+#
+# Two jobs, deliberately separated:
+#   parity - the full engine stack (torch/transformers) + the pinned laya oracle
+#   smoke  - a *bare* venv (pydantic only, no torch) proving `import narde` works
+#            without the heavy ML stack. That separation IS the invariant.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The oracle is pinned by commit SHA rather than by tag: upstream laya
+  # publishes no tags, and a floating oracle would make "40/40 green" meaningless.
+  # This SHA is the v0.3.5 tree the parity suite was written against.
+  LAYA_ORACLE_REPO: https://github.com/NandhaKishorM/laya.git
+  LAYA_ORACLE_SHA: 417089720510ba57bea7c505e52644773b68762d
+  TOKENIZERS_PARALLELISM: "false"
+
+jobs:
+  parity:
+    name: differential parity (40 checks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Fetch pinned laya oracle (read-only, never committed)
+        run: |
+          set -euo pipefail
+          git init --quiet reference/laya
+          cd reference/laya
+          git remote add origin "$LAYA_ORACLE_REPO"
+          # Prefer an exact shallow fetch of the pin; fall back to a full fetch
+          # if the server refuses a bare-SHA want.
+          if ! git fetch --quiet --depth 1 origin "$LAYA_ORACLE_SHA"; then
+            echo "::warning::shallow SHA fetch refused; falling back to a full fetch"
+            git fetch --quiet origin
+          fi
+          git checkout --quiet "$LAYA_ORACLE_SHA"
+          # Oracle drift guard: the suite is only meaningful at the pinned tree.
+          test "$(git rev-parse HEAD)" = "$LAYA_ORACLE_SHA"
+          test -f laya/common.py
+          grep -q 'version = "0.3.5"' pyproject.toml
+          echo "oracle OK: laya v0.3.5 @ $LAYA_ORACLE_SHA"
+
+      - name: Install engine stack (CPU-only torch)
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install "transformers>=4.48.0" "numpy>=1.24" "safetensors>=0.4.0" \
+                      "huggingface-hub>=0.20.0" "pydantic>=2.0" "pydantic-settings>=2.0" pytest
+          pip install -e . --no-deps
+
+      - name: Sanity - both sides import, torch is CPU-only
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import sys
+          sys.path[:0] = ["src", "reference/laya"]
+          import torch, laya, narde
+          assert "+cu" not in torch.__version__, f"expected a CPU build, got {torch.__version__}"
+          print("laya + narde import OK; torch", torch.__version__, "| narde", narde.__version__)
+          PY
+
+      - name: Differential parity suite (standalone runner)
+        run: python tests/parity/run.py
+
+      - name: Differential parity suite (pytest runner)
+        run: pytest -q tests/parity
+
+  smoke:
+    name: packaging canary (bare venv, py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.10 is the declared floor in pyproject `requires-python`; 3.12 guards
+        # against a modern toolchain silently breaking the lazy-import surface.
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install core deps only (deliberately no torch)
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install -e . pytest
+
+      - name: Assert torch is absent - that is the whole point of this job
+        run: |
+          set -euo pipefail
+          python -c "import importlib.util as u, sys; sys.exit('torch leaked into the bare env') if u.find_spec('torch') else print('torch absent OK')"
+
+      - name: import narde must work without torch
+        run: python -c "import narde; print('narde', narde.__version__)"
+
+      - name: Packaging smoke tests
+        run: pytest -q tests/test_smoke.py
