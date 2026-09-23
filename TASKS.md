@@ -10,9 +10,10 @@
 | M3 | `router.py` + `lang.py` | ✅ | 路由/别名/LRU/多语言全一致 |
 | M4 | `calib.py` 温度 + ECE | ✅ | clamp/ECE/confidence 与 laya 一致 |
 | M5 | `shortlist.py` + `presets.py` + `email.py` | ✅ | 高基数/预设/邮件与上游一致 |
-| M5.5 | 差分测试套件 `tests/parity/` | ✅ | 40 项全绿，CI 可重复 |
+| M5.5 | 差分测试套件 `tests/parity/` | ✅ | 40 项全绿，CI 强制（`.github/workflows/ci.yml`） |
 | M6（可选） | RLCD 域微调（需 HF 权重 + GPU） | ⬜ | typed-decisions 域 ≥ 0.70 acc |
 | M7 | bench 骨架 + 文档收尾 | ✅ | latency/quality 双 harness（`--tiny` 离线可跑）+ bench-log |
+| M8 | CI 门禁 + 许可/发布卫生 | ✅ | GitHub Actions 双 job 全绿；Apache-2.0 与上游一致 |
 
 ## M0 — 脚手架（✅）
 
@@ -82,3 +83,24 @@ DecisionModel，既验证前向一致，又验证架构 key/shape 兼容。
 - conventional commit：`feat(model): ...`、`test(parity): ...`、`docs: ...`
 - 每个 commit 前跑 `python tests/parity/run.py`（有 pytest 时 `pytest -q`）
 - `import narde` 必须保持 torch-free（`tests/test_smoke.py` 守门）
+- 推送后 `.github/workflows/ci.yml` 会独立复验以上两条，红灯即阻断
+
+## M8 — CI 门禁 + 许可/发布卫生（✅）
+
+"CI 可强制"从论文里的一句话变成真实门禁：
+
+- [x] `.github/workflows/ci.yml` — 两个刻意分离的 job：
+  - **`parity`**：CPU 引擎栈 + laya oracle，**按 commit SHA 钉死** `4170897`
+    （= v0.3.5；上游不发 tag，浮动 oracle 会让"40/40 全绿"失去意义）。
+    CI 断言取回的 SHA 与 pin 相符、且树内 `version = "0.3.5"`；
+    **两个 runner 都跑**（`tests/parity/run.py` + `pytest`）。
+  - **`smoke`**：裸 venv（仅 pydantic）× Python 3.10 / 3.12，并且
+    **断言 `torch` 不存在**（而不是只 import narde）——这条分离才是真正要守的不变量。
+- [x] `LICENSE` — Apache-2.0，与上游 laya **逐字节一致**（sha256 相同）
+- [x] `pyproject.toml` — license 由 `MIT` 修正为 `Apache-2.0`（原先与 `NOTICE.md`
+  自相矛盾）、补齐真实项目 URL 与 classifiers
+- [x] `tests/test_smoke.py` — 原先只有 pytest 风格函数、**无 `__main__`**，因此
+  `python tests/test_smoke.py` 会"什么都没跑"却 exit 0（假的绿灯）；现改为无 fixture
+  依赖、可独立运行，与 `tests/parity/run.py` 对称
+- [x] `.gitattributes` — yml/py/sh/toml/md/json 强制 LF。CRLF 进入 GitHub Actions 的
+  `run:` 块会以字面 `\r` 抵达 bash，破坏 heredoc；这条规则把这个失败模式彻底移除
